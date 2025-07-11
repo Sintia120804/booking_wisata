@@ -13,11 +13,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // User dummy
+        User::insert([
+            [
+                'name' => 'Sintia Admin',
+                'email' => 'admin@sintia.com',
+                'password' => bcrypt('password'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Sintia User',
+                'email' => 'user@sintia.com',
+                'password' => bcrypt('password'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+        $this->call([
+            \Database\Seeders\SintiaCategorySeeder::class,
+            \Database\Seeders\SintiaDestinationSeeder::class,
+            \Database\Seeders\SintiaBookingSeeder::class,
+            \Database\Seeders\SintiaReviewSeeder::class,
         ]);
     }
 }
