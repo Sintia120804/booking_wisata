@@ -1,7 +1,7 @@
 @extends('admin.layout')
 @section('content')
 <h2>Edit Destinasi</h2>
-<form method="POST" action="{{ route('destinations.update', $destination->id) }}">
+<form method="POST" action="{{ route('admin.destinations.update', $destination->id) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="mb-3">
@@ -29,10 +29,15 @@
         <textarea class="form-control" name="description" required>{{ $destination->description }}</textarea>
     </div>
     <div class="mb-3">
-        <label for="image" class="form-label">URL Gambar (opsional)</label>
-        <input type="text" class="form-control" name="image" value="{{ $destination->image }}">
+        <label for="image" class="form-label">Foto Wisata (jpg/png, opsional)</label>
+        @if($destination->image)
+            <div class="mb-2">
+                <img src="{{ asset('storage/'.$destination->image) }}" alt="Foto" width="120">
+            </div>
+        @endif
+        <input type="file" class="form-control" name="image" accept="image/*">
     </div>
     <button type="submit" class="btn btn-success">Update</button>
-    <a href="{{ route('destinations.index') }}" class="btn btn-secondary">Kembali</a>
+    <a href="{{ route('admin.destinations.index') }}" class="btn btn-secondary">Kembali</a>
 </form>
 @endsection 
