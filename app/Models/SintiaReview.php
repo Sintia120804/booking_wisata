@@ -8,6 +8,10 @@ use App\Models\User;
 
 class SintiaReview extends Model
 {
+    protected $fillable = [
+        'user_id', 'destination_id', 'rating', 'comment'
+    ];
+
     public function destination()
     {
         return $this->belongsTo(SintiaDestination::class, 'destination_id');

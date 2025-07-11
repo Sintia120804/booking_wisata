@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class SintiaDestination extends Model
 {
+    protected $fillable = [
+        'name', 'category_id', 'location', 'description', 'price', 'image'
+    ];
+
     public function category()
     {
         return $this->belongsTo(SintiaCategory::class, 'category_id');

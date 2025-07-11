@@ -18,14 +18,14 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Sintia Admin',
                 'email' => 'admin@sintia.com',
-                'password' => bcrypt('password'),
+                'password' => bcrypt('password123'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Sintia User',
                 'email' => 'user@sintia.com',
-                'password' => bcrypt('password'),
+                'password' => bcrypt('password123'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

@@ -8,6 +8,10 @@ use App\Models\User;
 
 class SintiaBooking extends Model
 {
+    protected $fillable = [
+        'user_id', 'destination_id', 'booking_date', 'total_person', 'status'
+    ];
+
     public function destination()
     {
         return $this->belongsTo(SintiaDestination::class, 'destination_id');
