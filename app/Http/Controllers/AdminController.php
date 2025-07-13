@@ -11,16 +11,8 @@ use App\Models\User;
 
 class AdminController extends Controller
 {
-    private function checkAdmin()
-    {
-        if (!session('user_id') || session('user_email') !== 'admin@sintia.com') {
-            abort(403, 'Akses hanya untuk admin.');
-        }
-    }
-
     public function dashboard()
     {
-        $this->checkAdmin();
         // Statistik utama
         $totalBooking = \App\Models\SintiaBooking::count();
         $totalUser = \App\Models\User::count();
@@ -30,8 +22,10 @@ class AdminController extends Controller
         $bookingConfirmed = \App\Models\SintiaBooking::where('status', 'confirmed')->count();
         $bookingCancelled = \App\Models\SintiaBooking::where('status', 'cancelled')->count();
 
-        // Booking per bulan (untuk grafik)
-        $bookingsPerMonth = \App\Models\SintiaBooking::selectRaw('MONTH(booking_date) as month, COUNT(*) as total')
+        // Booking per bulan (hanya tahun berjalan)
+        $currentYear = date('Y');
+        $bookingsPerMonth = \App\Models\SintiaBooking::whereYear('booking_date', $currentYear)
+            ->selectRaw('MONTH(booking_date) as month, COUNT(*) as total')
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month')->toArray();
@@ -62,18 +56,17 @@ class AdminController extends Controller
     // Kategori CRUD
     public function index()
     {
-        $this->checkAdmin();
         $categories = SintiaCategory::all();
         return view('admin.categories.index', compact('categories'));
     }
+    
     public function create()
     {
-        $this->checkAdmin();
         return view('admin.categories.create');
     }
+    
     public function store(Request $request)
     {
-        $this->checkAdmin();
         $request->validate([
             'name' => 'required',
             'description' => 'nullable',
@@ -81,15 +74,15 @@ class AdminController extends Controller
         SintiaCategory::create($request->only('name', 'description'));
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan!');
     }
+    
     public function edit($id)
     {
-        $this->checkAdmin();
         $category = SintiaCategory::findOrFail($id);
         return view('admin.categories.edit', compact('category'));
     }
+    
     public function update(Request $request, $id)
     {
-        $this->checkAdmin();
         $request->validate([
             'name' => 'required',
             'description' => 'nullable',
@@ -98,35 +91,34 @@ class AdminController extends Controller
         $category->update($request->only('name', 'description'));
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil diupdate!');
     }
+    
     public function destroy($id)
     {
-        $this->checkAdmin();
         $category = SintiaCategory::findOrFail($id);
         $category->delete();
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus!');
     }
+    
     public function show($id)
     {
-        $this->checkAdmin();
         // Detail data (khusus booking)
     }
 
     // Destinasi CRUD
     public function destinationsIndex()
     {
-        $this->checkAdmin();
-        $destinations = SintiaDestination::with('category')->get();
+        $destinations = SintiaDestination::with('category')->orderBy('created_at', 'desc')->get();
         return view('admin.destinations.index', compact('destinations'));
     }
+    
     public function destinationsCreate()
     {
-        $this->checkAdmin();
         $categories = SintiaCategory::all();
         return view('admin.destinations.create', compact('categories'));
     }
+    
     public function destinationsStore(Request $request)
     {
-        $this->checkAdmin();
         $request->validate([
             'name' => 'required',
             'category_id' => 'required|exists:sintia_categories,id',
@@ -142,16 +134,16 @@ class AdminController extends Controller
         \App\Models\SintiaDestination::create($data);
         return redirect()->route('admin.destinations.index')->with('success', 'Destinasi berhasil ditambahkan!');
     }
+    
     public function destinationsEdit($id)
     {
-        $this->checkAdmin();
         $destination = SintiaDestination::findOrFail($id);
         $categories = SintiaCategory::all();
         return view('admin.destinations.edit', compact('destination', 'categories'));
     }
+    
     public function destinationsUpdate(Request $request, $id)
     {
-        $this->checkAdmin();
         $request->validate([
             'name' => 'required',
             'category_id' => 'required|exists:sintia_categories,id',
@@ -168,9 +160,9 @@ class AdminController extends Controller
         $destination->update($data);
         return redirect()->route('admin.destinations.index')->with('success', 'Destinasi berhasil diupdate!');
     }
+    
     public function destinationsDestroy($id)
     {
-        $this->checkAdmin();
         $destination = SintiaDestination::findOrFail($id);
         $destination->delete();
         return redirect()->route('destinations')->with('success', 'Destinasi berhasil dihapus!');
@@ -179,19 +171,18 @@ class AdminController extends Controller
     // Booking CRUD
     public function bookingsIndex()
     {
-        $this->checkAdmin();
         $bookings = \App\Models\SintiaBooking::with(['user', 'destination'])->orderBy('created_at', 'desc')->get();
         return view('admin.bookings.index', compact('bookings'));
     }
+    
     public function bookingsShow($id)
     {
-        $this->checkAdmin();
         $booking = SintiaBooking::with(['user', 'destination'])->findOrFail($id);
         return view('admin.bookings.show', compact('booking'));
     }
+    
     public function bookingsUpdate(Request $request, $id)
     {
-        $this->checkAdmin();
         $request->validate([
             'status' => 'required|in:pending,confirmed,cancelled',
         ]);
@@ -199,9 +190,9 @@ class AdminController extends Controller
         $booking->update(['status' => $request->status]);
         return redirect()->route('bookings.index')->with('success', 'Status booking berhasil diupdate!');
     }
+    
     public function bookingsDestroy($id)
     {
-        $this->checkAdmin();
         $booking = SintiaBooking::findOrFail($id);
         $booking->delete();
         return redirect()->route('bookings.index')->with('success', 'Booking berhasil dihapus!');
@@ -210,13 +201,12 @@ class AdminController extends Controller
     // Review CRUD
     public function reviewsIndex()
     {
-        $this->checkAdmin();
         $reviews = SintiaReview::with(['user', 'destination'])->get();
         return view('admin.reviews.index', compact('reviews'));
     }
+    
     public function reviewsDestroy($id)
     {
-        $this->checkAdmin();
         $review = SintiaReview::findOrFail($id);
         $review->delete();
         return redirect()->route('reviews.index')->with('success', 'Review berhasil dihapus!');
@@ -225,7 +215,6 @@ class AdminController extends Controller
     // User CRUD (index, edit, update, destroy)
     public function usersIndex()
     {
-        $this->checkAdmin();
         $users = User::all();
         return view('admin.users.index', compact('users'));
     }

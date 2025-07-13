@@ -37,14 +37,16 @@
                 @endif
             </td>
             <td>
+                <a href="{{ route('my.bookings.detail', $book->id) }}" class="btn btn-info btn-sm mb-1">Detail</a>
+                @if($book->status == 'confirmed')
+                    <a href="{{ route('my.bookings.print', $book->id) }}" class="btn btn-success btn-sm mb-1" target="_blank">Cetak</a>
+                @endif
                 @if($book->status == 'pending')
                     <form action="{{ route('my.bookings.cancel', $book->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('PUT')
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Batalkan booking ini?')">Batalkan</button>
                     </form>
-                @else
-                    <span class="text-muted">-</span>
                 @endif
             </td>
         </tr>

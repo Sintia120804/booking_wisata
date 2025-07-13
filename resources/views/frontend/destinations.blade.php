@@ -2,12 +2,17 @@
 
 @section('content')
 <!-- Hero Section -->
-<div class="hero-section text-white mb-5" style="background: linear-gradient(135deg, #0077b6 0%, #48cae4 100%); min-height: 280px; position: relative;">
-    <div class="container py-5">
-        <h1 class="display-4 fw-bold">Destinasi Wisata</h1>
-        <p class="lead">Temukan dan booking destinasi wisata lokal terbaik untuk liburanmu!</p>
+<div class="position-relative mb-0" style="min-height:320px;">
+    <div style="background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center center/cover no-repeat; min-height:320px; width:100%; position:absolute; top:0; left:0; right:0; bottom:0; z-index:1;"></div>
+    <div style="position:absolute; top:0; left:0; right:0; bottom:0; background: linear-gradient(120deg,rgba(0,60,120,0.7) 60%,rgba(0,180,220,0.5) 100%); z-index:2;"></div>
+    <div class="container position-relative" style="z-index:3; min-height:320px; display:flex; align-items:center; justify-content:center;">
+        <div class="w-100 text-center py-5">
+            <h1 class="display-2 fw-bold text-white mb-3" style="text-shadow:0 2px 8px rgba(0,0,0,0.25)">Destinasi Wisata</h1>
+            <p class="fs-3 text-white mb-0" style="text-shadow:0 1px 4px rgba(0,0,0,0.18)">Temukan dan booking destinasi wisata lokal terbaik, mulai dari pantai, gunung, hingga taman hiburan favoritmu.<br>Liburan seru, mudah, dan hemat hanya di sini!</p>
+        </div>
     </div>
 </div>
+<h2 class="fw-bold mb-4 mt-3 text-center" style="font-size:2.2rem;">Daftar Destinasi Wisata</h2>
 <!-- Grid Card Section -->
 <div class="container">
     <div class="row g-4">

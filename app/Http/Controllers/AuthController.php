@@ -27,8 +27,8 @@ class AuthController extends Controller
         ]);
         $user = User::where('email', $request->email)->first();
         if ($user && Hash::check($request->password, $user->password)) {
-            session(['user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name]);
-            if ($user->email === 'admin@sintia.com') {
+            session(['user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name, 'user_role' => $user->role]);
+            if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Login admin berhasil!');
             }
             return redirect('/')->with('success', 'Login berhasil!');
@@ -47,9 +47,10 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
-        session(['user_id' => $user->id, 'user_email' => $user->email, 'user_name' => $user->name]);
-        return redirect('/')->with('success', 'Registrasi berhasil!');
+        // Setelah register, arahkan ke login dengan pesan sukses
+        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login menggunakan akun Anda.');
     }
 
     public function logout(Request $request)

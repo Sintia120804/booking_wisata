@@ -14,7 +14,7 @@ class FrontendController extends Controller
 {
     public function destinations()
     {
-        $destinations = SintiaDestination::with('category')->get();
+        $destinations = SintiaDestination::with('category')->orderBy('created_at', 'desc')->get();
         return view('frontend.destinations', compact('destinations'));
     }
 
@@ -26,10 +26,6 @@ class FrontendController extends Controller
 
     public function booking(Request $request)
     {
-        // Proteksi: hanya user login yang bisa booking
-        if (!session('user_id')) {
-            return redirect()->route('login')->withErrors(['email' => 'Anda harus login untuk booking.']);
-        }
         $user = \App\Models\User::find(session('user_id'));
         $request->validate([
             'destination_id' => 'required|exists:sintia_destinations,id',
@@ -54,19 +50,16 @@ class FrontendController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::error('Upload payment proof error: '.$e->getMessage());
+            Log::error('Upload payment proof error: '.$e->getMessage());
             return back()->withErrors(['payment_proof' => 'Gagal upload bukti pembayaran.']);
         }
-        \App\Models\SintiaBooking::create($data);
-        return \Illuminate\Support\Facades\Redirect::route('destinations.detail', $request->destination_id)
-            ->with('success', 'Booking berhasil! Silakan tunggu konfirmasi admin.');
+        $booking = \App\Models\SintiaBooking::create($data);
+        return \Illuminate\Support\Facades\Redirect::route('my.bookings.detail', $booking->id)
+            ->with('success', 'Booking berhasil! Berikut detail booking Anda.');
     }
 
     public function addReview(Request $request)
     {
-        if (!session('user_id')) {
-            return redirect()->route('login')->withErrors(['email' => 'Anda harus login untuk menulis review.']);
-        }
         $request->validate([
             'destination_id' => 'required|exists:sintia_destinations,id',
             'rating' => 'required|integer|min:1|max:5',
@@ -89,9 +82,6 @@ class FrontendController extends Controller
 
     public function myBookings()
     {
-        if (!session('user_id')) {
-            return redirect()->route('login')->withErrors(['email' => 'Anda harus login untuk melihat booking.']);
-        }
         $bookings = \App\Models\SintiaBooking::with('destination')
             ->where('user_id', session('user_id'))
             ->orderBy('created_at', 'desc')
@@ -101,9 +91,6 @@ class FrontendController extends Controller
 
     public function cancelBooking($id)
     {
-        if (!session('user_id')) {
-            return redirect()->route('login')->withErrors(['email' => 'Anda harus login.']);
-        }
         $booking = \App\Models\SintiaBooking::where('id', $id)
             ->where('user_id', session('user_id'))
             ->where('status', 'pending')
@@ -122,5 +109,24 @@ class FrontendController extends Controller
     {
         $destination = \App\Models\SintiaDestination::findOrFail($id);
         return view('frontend.review_create', compact('destination'));
+    }
+
+    public function myBookingDetail($id)
+    {
+        $booking = \App\Models\SintiaBooking::with(['destination', 'user'])
+            ->where('id', $id)
+            ->where('user_id', session('user_id'))
+            ->firstOrFail();
+        return view('frontend.my_booking_detail', compact('booking'));
+    }
+
+    public function printBooking($id)
+    {
+        $booking = \App\Models\SintiaBooking::with(['destination', 'user'])
+            ->where('id', $id)
+            ->where('user_id', session('user_id'))
+            ->where('status', 'confirmed')
+            ->firstOrFail();
+        return view('frontend.print_booking', compact('booking'));
     }
 }

@@ -16,7 +16,7 @@
             <td>{{ $loop->iteration }}</td>
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
-            <td>{{ $user->email == 'admin@sintia.com' ? 'Admin' : 'User' }}</td>
+            <td>{{ $user->role ?? '-' }}</td>
         </tr>
         @endforeach
     </tbody>

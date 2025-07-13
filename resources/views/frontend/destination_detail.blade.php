@@ -18,6 +18,20 @@
             <div class="mb-2"><i class="fa fa-map-marker-alt me-1"></i> {{ $destination->location }}</div>
             <div class="mb-2 text-primary fw-bold fs-4">Rp{{ number_format($destination->price,0,',','.') }}</div>
             <p>{{ $destination->description }}</p>
+
+            {{-- Review Pengunjung --}}
+            @if($destination->reviews && count($destination->reviews))
+                <hr>
+                <h4 class="mb-3">Review Pengunjung</h4>
+                @foreach($destination->reviews as $review)
+                    <div class="mb-3">
+                        <strong>Rating: {{ $review->rating }}/5</strong><br>
+                        {{ $review->comment }}
+                    </div>
+                    <hr>
+                @endforeach
+            @endif
+
             <div class="d-flex gap-3 mt-4 align-items-start flex-wrap">
                 <div class="d-flex flex-column">
                     <a href="{{ route('booking.create', $destination->id) }}" class="btn btn-success btn-lg fw-semibold mb-3" style="min-width:220px;">Booking Sekarang</a>
@@ -80,16 +94,6 @@
                     </form>
                 </div>
             </div>
-            <hr>
-            <h4>Review Pengunjung</h4>
-            @forelse($destination->reviews as $review)
-                <div class="mb-2 border-bottom pb-2">
-                    <strong>Rating: {{ $review->rating }}/5</strong><br>
-                    <span>{{ $review->comment }}</span>
-                </div>
-            @empty
-                <div class="text-muted">Belum ada review.</div>
-            @endforelse
         </div>
     </div>
 </div>
