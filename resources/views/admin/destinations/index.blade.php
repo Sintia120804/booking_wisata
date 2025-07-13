@@ -9,6 +9,7 @@
     <thead>
         <tr>
             <th>No</th>
+            <th>Gambar</th>
             <th>Nama</th>
             <th>Kategori</th>
             <th>Lokasi</th>
@@ -20,6 +21,13 @@
         @foreach($destinations as $dest)
         <tr>
             <td>{{ $loop->iteration }}</td>
+            <td>
+                @if($dest->image)
+                    <img src="{{ asset('storage/'.$dest->image) }}" alt="Gambar" width="60">
+                @else
+                    <span class="text-muted">-</span>
+                @endif
+            </td>
             <td>{{ $dest->name }}</td>
             <td>{{ $dest->category->name }}</td>
             <td>{{ $dest->location }}</td>

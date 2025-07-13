@@ -6,15 +6,19 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
-    return redirect()->route('destinations.index');
+    return redirect()->route('destinations');
 });
 
 // Frontend
-Route::get('/destinations', [FrontendController::class, 'destinations'])->name('destinations.index');
+Route::get('/destinations', [App\Http\Controllers\FrontendController::class, 'destinations'])->name('destinations');
 Route::get('/destinations/{id}', [FrontendController::class, 'destinationDetail'])->name('destinations.detail');
 Route::post('/bookings', [FrontendController::class, 'booking'])->name('bookings.store');
 Route::get('/reviews/{destination_id}', [FrontendController::class, 'reviews'])->name('reviews.index');
 Route::post('/reviews', [FrontendController::class, 'addReview'])->name('reviews.store');
+Route::get('/my-bookings', [FrontendController::class, 'myBookings'])->name('my.bookings');
+Route::put('/my-bookings/{id}/cancel', [FrontendController::class, 'cancelBooking'])->name('my.bookings.cancel');
+Route::get('/booking/create/{id}', [App\Http\Controllers\FrontendController::class, 'showBookingForm'])->name('booking.create');
+Route::get('/review/create/{id}', [App\Http\Controllers\FrontendController::class, 'showReviewForm'])->name('review.create');
 
 // Auth manual
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

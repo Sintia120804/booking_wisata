@@ -9,7 +9,7 @@ use App\Models\User;
 class SintiaBooking extends Model
 {
     protected $fillable = [
-        'user_id', 'destination_id', 'booking_date', 'total_person', 'status'
+        'user_id', 'destination_id', 'booking_date', 'total_person', 'status', 'payment_proof'
     ];
 
     public function destination()

@@ -26,7 +26,7 @@
             <td>{{ $book->total_person }}</td>
             <td>{{ ucfirst($book->status) }}</td>
             <td>
-                <a href="{{ route('bookings.show', $book->id) }}" class="btn btn-info btn-sm">Detail/Ubah Status</a>
+                <a href="{{ route('bookings.show', $book->id) }}" class="btn btn-info btn-sm">Detail</a>
                 <form action="{{ route('bookings.destroy', $book->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')

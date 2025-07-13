@@ -21,8 +21,42 @@ class AdminController extends Controller
     public function dashboard()
     {
         $this->checkAdmin();
-        // Dashboard admin
-        return view('admin.dashboard');
+        // Statistik utama
+        $totalBooking = \App\Models\SintiaBooking::count();
+        $totalUser = \App\Models\User::count();
+        $totalDestination = \App\Models\SintiaDestination::count();
+        $totalReview = \App\Models\SintiaReview::count();
+        $bookingPending = \App\Models\SintiaBooking::where('status', 'pending')->count();
+        $bookingConfirmed = \App\Models\SintiaBooking::where('status', 'confirmed')->count();
+        $bookingCancelled = \App\Models\SintiaBooking::where('status', 'cancelled')->count();
+
+        // Booking per bulan (untuk grafik)
+        $bookingsPerMonth = \App\Models\SintiaBooking::selectRaw('MONTH(booking_date) as month, COUNT(*) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month')->toArray();
+        $chartData = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $chartData[] = $bookingsPerMonth[$i] ?? 0;
+        }
+
+        // Destinasi populer (berdasarkan jumlah booking)
+        $popularDestinations = \App\Models\SintiaDestination::withCount('bookings')
+            ->orderBy('bookings_count', 'desc')
+            ->take(3)
+            ->get();
+
+        // Booking history (10 terbaru)
+        $bookingHistory = \App\Models\SintiaBooking::with(['user', 'destination'])
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'totalBooking', 'totalUser', 'totalDestination', 'totalReview',
+            'bookingPending', 'bookingConfirmed', 'bookingCancelled',
+            'chartData', 'popularDestinations', 'bookingHistory'
+        ));
     }
 
     // Kategori CRUD
@@ -124,25 +158,29 @@ class AdminController extends Controller
             'location' => 'required',
             'description' => 'required',
             'price' => 'required|integer|min:0',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-        $destination = SintiaDestination::findOrFail($id);
-        $destination->update($request->only('name', 'category_id', 'location', 'description', 'price', 'image'));
-        return redirect()->route('destinations.index')->with('success', 'Destinasi berhasil diupdate!');
+        $destination = \App\Models\SintiaDestination::findOrFail($id);
+        $data = $request->only('name', 'category_id', 'location', 'description', 'price');
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('destinations', 'public');
+        }
+        $destination->update($data);
+        return redirect()->route('admin.destinations.index')->with('success', 'Destinasi berhasil diupdate!');
     }
     public function destinationsDestroy($id)
     {
         $this->checkAdmin();
         $destination = SintiaDestination::findOrFail($id);
         $destination->delete();
-        return redirect()->route('destinations.index')->with('success', 'Destinasi berhasil dihapus!');
+        return redirect()->route('destinations')->with('success', 'Destinasi berhasil dihapus!');
     }
 
     // Booking CRUD
     public function bookingsIndex()
     {
         $this->checkAdmin();
-        $bookings = SintiaBooking::with(['user', 'destination'])->get();
+        $bookings = \App\Models\SintiaBooking::with(['user', 'destination'])->orderBy('created_at', 'desc')->get();
         return view('admin.bookings.index', compact('bookings'));
     }
     public function bookingsShow($id)

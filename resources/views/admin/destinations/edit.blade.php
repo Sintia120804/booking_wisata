@@ -40,4 +40,4 @@
     <button type="submit" class="btn btn-success">Update</button>
     <a href="{{ route('admin.destinations.index') }}" class="btn btn-secondary">Kembali</a>
 </form>
-@endsection 
+@endsection

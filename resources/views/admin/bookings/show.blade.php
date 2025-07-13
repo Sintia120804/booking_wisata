@@ -7,6 +7,19 @@
     <tr><th>Tanggal</th><td>{{ $booking->booking_date }}</td></tr>
     <tr><th>Jumlah Orang</th><td>{{ $booking->total_person }}</td></tr>
     <tr><th>Status</th><td>{{ ucfirst($booking->status) }}</td></tr>
+    <tr><th>Bukti Pembayaran</th><td>
+        @if($booking->payment_proof)
+            @if(Str::endsWith($booking->payment_proof, ['.jpg','.jpeg','.png']))
+                <a href="{{ asset('storage/'.$booking->payment_proof) }}" target="_blank">
+                    <img src="{{ asset('storage/'.$booking->payment_proof) }}" alt="Bukti" width="120">
+                </a>
+            @else
+                <a href="{{ asset('storage/'.$booking->payment_proof) }}" target="_blank">Lihat File</a>
+            @endif
+        @else
+            <span class="text-muted">-</span>
+        @endif
+    </td></tr>
 </table>
 <form method="POST" action="{{ route('bookings.update', $booking->id) }}">
     @csrf

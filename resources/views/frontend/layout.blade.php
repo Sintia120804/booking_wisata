@@ -17,6 +17,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="/destinations">Destinasi</a></li>
                     @if(session('user_id'))
+                        <li class="nav-item"><a class="nav-link" href="{{ route('my.bookings') }}">Booking Saya</a></li>
                         <li class="nav-item"><span class="nav-link">{{ session('user_name') }}</span></li>
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST" style="display:inline;">
@@ -36,5 +37,6 @@
         @yield('content')
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </body>
 </html> 
