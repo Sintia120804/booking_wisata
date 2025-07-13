@@ -29,11 +29,7 @@
                 <input type="password" class="form-control rounded-pill px-3 py-2" name="password_confirmation" required autocomplete="new-password">
             </div>
             <div class="mb-3">
-                <label for="role" class="form-label">Daftar Sebagai</label>
-                <select class="form-control rounded-pill px-3 py-2" name="role" required>
-                    <option value="user" selected>User</option>
-                    <option value="admin">Admin</option>
-                </select>
+                <input type="hidden" name="role" value="user">
             </div>
             @if($errors->any())
                 <div class="alert alert-danger text-center">{{ $errors->first() }}</div>
